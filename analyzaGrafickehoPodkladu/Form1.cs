@@ -31,6 +31,8 @@ namespace analyzaGrafickehoPodkladu
             btnImport.Enabled = false;
             IsCreatingNew = true;
             SavedAreas.Add(new Area(SavedAreas.Count));
+            lbSaved.SelectedIndex = -1;
+            UpdateAll();
         }
 
         private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
@@ -43,7 +45,7 @@ namespace analyzaGrafickehoPodkladu
                     btnSave.Enabled = true;
                 }
             }
-            UpdateLabels();
+            UpdateAll();
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -54,7 +56,8 @@ namespace analyzaGrafickehoPodkladu
             btnSave.Enabled = false;
             IsCreatingNew = false;
             lbSaved.Items.Add(SavedAreas[SavedAreas.Count - 1]);
-            UpdateLabels();
+            lbSaved.SelectedIndex = lbSaved.Items.Count - 1;
+            UpdateAll();
         }
         public double GetRealDistance(double distance)
         {
@@ -66,8 +69,9 @@ namespace analyzaGrafickehoPodkladu
             return distance * (((double)numScale.Value * (double)numScale.Value) / (400 * 400));
         }
 
-        public void UpdateLabels()
+        public void UpdateAll()
         {
+            pictureBox1.Invalidate();
             if (IsCreatingNew)
             {
                 Area currentArea = SavedAreas[SavedAreas.Count - 1];
@@ -118,7 +122,34 @@ namespace analyzaGrafickehoPodkladu
                     lbPoints.Items.Add(point);
                 }
             }
-            UpdateLabels();
+            UpdateAll();
+        }
+
+        private void pictureBox1_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            Pen pen = new Pen(Color.Blue, 2);
+            SolidBrush brush = new SolidBrush(Color.Red);
+            if (SavedAreas.Count >= 1 && (IsCreatingNew || (lbSaved.SelectedIndex != -1 && SavedAreas.Count >= lbSaved.SelectedIndex)))
+            {
+                Area visibleArea = IsCreatingNew ? SavedAreas[SavedAreas.Count - 1] : SavedAreas[lbSaved.SelectedIndex];
+                for (int i = 0; i < visibleArea.Points.Count; i++)
+                {
+                    Point a = visibleArea.Points[i];
+                    Point b = i == visibleArea.Points.Count - 1 ? visibleArea.Points[0] : visibleArea.Points[i + 1];
+                    if (i == visibleArea.Points.Count - 1 && IsCreatingNew) break;
+                    g.DrawLine(pen, a, b);
+                }
+                foreach (var point in visibleArea.Points)
+                {
+                    g.FillEllipse(brush, point.X - 5, point.Y - 5, 10, 10);
+                }
+            }
+        }
+
+        private void numScale_ValueChanged(object sender, EventArgs e)
+        {
+            UpdateAll();
         }
     }
 }

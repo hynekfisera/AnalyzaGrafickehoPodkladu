@@ -46,7 +46,7 @@ namespace analyzaGrafickehoPodkladu
             {
                 temp += allPoints[i].X * allPoints[i + 1].Y - allPoints[i + 1].X * allPoints[i].Y;
             }
-            return temp / 2;
+            return Math.Abs(temp) / 2;
         }
     }
 }

@@ -73,6 +73,7 @@
             numScale.Size = new Size(58, 23);
             numScale.TabIndex = 1;
             numScale.Value = new decimal(new int[] { 100, 0, 0, 0 });
+            numScale.ValueChanged += numScale_ValueChanged;
             // 
             // labelInfo1
             // 
@@ -100,6 +101,7 @@
             pictureBox1.Size = new Size(400, 400);
             pictureBox1.TabIndex = 4;
             pictureBox1.TabStop = false;
+            pictureBox1.Paint += pictureBox1_Paint;
             pictureBox1.MouseClick += pictureBox1_MouseClick;
             // 
             // labelInfoLast
