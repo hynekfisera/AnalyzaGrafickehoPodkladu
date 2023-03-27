@@ -45,6 +45,11 @@
             btnExport = new Button();
             lbPoints = new ListBox();
             cbOverwrite = new CheckBox();
+            labelDistance = new Label();
+            labelLast = new Label();
+            labelPerimeter = new Label();
+            labelArea = new Label();
+            labelLastArea = new Label();
             ((System.ComponentModel.ISupportInitialize)numScale).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
@@ -89,11 +94,13 @@
             // 
             // pictureBox1
             // 
+            pictureBox1.Image = Properties.Resources.mapa;
             pictureBox1.Location = new Point(12, 52);
             pictureBox1.Name = "pictureBox1";
             pictureBox1.Size = new Size(400, 400);
             pictureBox1.TabIndex = 4;
             pictureBox1.TabStop = false;
+            pictureBox1.MouseClick += pictureBox1_MouseClick;
             // 
             // labelInfoLast
             // 
@@ -118,18 +125,18 @@
             labelInfoPerimeter.AutoSize = true;
             labelInfoPerimeter.Location = new Point(423, 293);
             labelInfoPerimeter.Name = "labelInfoPerimeter";
-            labelInfoPerimeter.Size = new Size(193, 15);
+            labelInfoPerimeter.Size = new Size(129, 15);
             labelInfoPerimeter.TabIndex = 7;
-            labelInfoPerimeter.Text = "Obvod vybraného mnohoúhelníku:";
+            labelInfoPerimeter.Text = "Obvod vybrané oblasti:";
             // 
             // labelInfoArea
             // 
             labelInfoArea.AutoSize = true;
             labelInfoArea.Location = new Point(423, 268);
             labelInfoArea.Name = "labelInfoArea";
-            labelInfoArea.Size = new Size(191, 15);
+            labelInfoArea.Size = new Size(127, 15);
             labelInfoArea.TabIndex = 8;
-            labelInfoArea.Text = "Obsah vybraného mnohoúhelníku:";
+            labelInfoArea.Text = "Obsah vybrané oblasti:";
             // 
             // labelInfoLastArea
             // 
@@ -148,26 +155,28 @@
             lbSaved.Name = "lbSaved";
             lbSaved.Size = new Size(171, 109);
             lbSaved.TabIndex = 10;
+            lbSaved.SelectedIndexChanged += lbSaved_SelectedIndexChanged;
             // 
             // btnNew
             // 
-            btnNew.Enabled = false;
             btnNew.Location = new Point(421, 12);
             btnNew.Name = "btnNew";
-            btnNew.Size = new Size(156, 23);
+            btnNew.Size = new Size(173, 23);
             btnNew.TabIndex = 11;
-            btnNew.Text = "Nový mnohoúhelník";
+            btnNew.Text = "Nová oblast";
             btnNew.UseVisualStyleBackColor = true;
+            btnNew.Click += btnNew_Click;
             // 
             // btnSave
             // 
             btnSave.Enabled = false;
-            btnSave.Location = new Point(583, 12);
+            btnSave.Location = new Point(600, 12);
             btnSave.Name = "btnSave";
-            btnSave.Size = new Size(205, 23);
+            btnSave.Size = new Size(188, 23);
             btnSave.TabIndex = 12;
-            btnSave.Text = "Ukončit mnohoúhelník a uložit";
+            btnSave.Text = "Ukončit oblast a uložit";
             btnSave.UseVisualStyleBackColor = true;
+            btnSave.Click += btnSave_Click;
             // 
             // btnImport
             // 
@@ -207,11 +216,61 @@
             cbOverwrite.Text = "Přepsat zvolený bod kliknutím";
             cbOverwrite.UseVisualStyleBackColor = true;
             // 
+            // labelDistance
+            // 
+            labelDistance.AutoSize = true;
+            labelDistance.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            labelDistance.Location = new Point(655, 41);
+            labelDistance.Name = "labelDistance";
+            labelDistance.Size = new Size(0, 15);
+            labelDistance.TabIndex = 17;
+            // 
+            // labelLast
+            // 
+            labelLast.AutoSize = true;
+            labelLast.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            labelLast.Location = new Point(553, 65);
+            labelLast.Name = "labelLast";
+            labelLast.Size = new Size(0, 15);
+            labelLast.TabIndex = 18;
+            // 
+            // labelPerimeter
+            // 
+            labelPerimeter.AutoSize = true;
+            labelPerimeter.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            labelPerimeter.Location = new Point(553, 293);
+            labelPerimeter.Name = "labelPerimeter";
+            labelPerimeter.Size = new Size(0, 15);
+            labelPerimeter.TabIndex = 19;
+            // 
+            // labelArea
+            // 
+            labelArea.AutoSize = true;
+            labelArea.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            labelArea.Location = new Point(551, 269);
+            labelArea.Name = "labelArea";
+            labelArea.Size = new Size(0, 15);
+            labelArea.TabIndex = 20;
+            // 
+            // labelLastArea
+            // 
+            labelLastArea.AutoSize = true;
+            labelLastArea.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            labelLastArea.Location = new Point(558, 89);
+            labelLastArea.Name = "labelLastArea";
+            labelLastArea.Size = new Size(0, 15);
+            labelLastArea.TabIndex = 21;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 464);
+            Controls.Add(labelLastArea);
+            Controls.Add(labelArea);
+            Controls.Add(labelPerimeter);
+            Controls.Add(labelLast);
+            Controls.Add(labelDistance);
             Controls.Add(cbOverwrite);
             Controls.Add(lbPoints);
             Controls.Add(btnExport);
@@ -256,5 +315,10 @@
         private Button btnExport;
         private ListBox lbPoints;
         private CheckBox cbOverwrite;
+        private Label labelDistance;
+        private Label labelLast;
+        private Label labelPerimeter;
+        private Label labelArea;
+        private Label labelLastArea;
     }
 }
