@@ -56,8 +56,83 @@ namespace analyzaGrafickehoPodkladu
 
         private Point GetCornerPoint(Point clickedPoint)
         {
-            // TODO
-            return clickedPoint;
+            if (!IsBlank(clickedPoint))
+            {
+                return clickedPoint;
+            }
+            else
+            {
+                int initial = Math.Max(pictureBox1.Image.Width, pictureBox1.Image.Height);
+                int up = initial;
+                int down = initial;
+                int left = initial;
+                int right = initial;
+
+                for (int i = clickedPoint.Y - 1; i > 0; i--)
+                {
+                    if (!IsBlank(clickedPoint.X, i))
+                    {
+                        up = clickedPoint.Y - i;
+                        break;
+                    }
+                }
+                for (int i = clickedPoint.Y + 1; i < pictureBox1.Image.Height; i++)
+                {
+                    if (!IsBlank(clickedPoint.X, i))
+                    {
+                        down = i - clickedPoint.Y;
+                        break;
+                    }
+                }
+                for (int i = clickedPoint.X + 1; i < pictureBox1.Image.Width; i++)
+                {
+                    if (!IsBlank(i, clickedPoint.Y))
+                    {
+                        right = i - clickedPoint.X;
+                        break;
+                    }
+                }
+                for (int i = clickedPoint.X - 1; i > 0; i--)
+                {
+                    if (!IsBlank(i, clickedPoint.Y))
+                    {
+                        left = clickedPoint.X - i;
+                        break;
+                    }
+                }
+                string max = new[] {
+                    Tuple.Create(up, "up"),
+                    Tuple.Create(down, "down"),
+                    Tuple.Create(left, "left"),
+                    Tuple.Create(right, "right")
+                }.Min().Item2;
+                switch (max)
+                {
+                    case "up":
+                        return new Point(clickedPoint.X, clickedPoint.Y - up);
+                    case "down":
+                        return new Point(clickedPoint.X, clickedPoint.Y + down);
+                    case "right":
+                        return new Point(clickedPoint.X + right, clickedPoint.Y);
+                    case "left":
+                        return new Point(clickedPoint.X - left, clickedPoint.Y);
+                    default:
+                        return clickedPoint;
+                }
+            }
+        }
+
+        private bool IsBlank(int x, int y)
+        {
+            Point point = new Point(x, y);
+            Bitmap bmp = new Bitmap(pictureBox1.Image);
+            return bmp.GetPixel(point.X, point.Y).Name == "ffffffff";
+        }
+
+        private bool IsBlank(Point point)
+        {
+            Bitmap bmp = new Bitmap(pictureBox1.Image);
+            return bmp.GetPixel(point.X, point.Y).Name == "ffffffff";
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -71,17 +146,18 @@ namespace analyzaGrafickehoPodkladu
             lbSaved.SelectedIndex = lbSaved.Items.Count - 1;
             UpdateAll();
         }
-        public double GetRealDistance(double distance)
+
+        private double GetRealDistance(double distance)
         {
             return distance * ((double)numScale.Value / 400);
         }
 
-        public double GetRealArea(double distance)
+        private double GetRealArea(double distance)
         {
             return distance * (((double)numScale.Value * (double)numScale.Value) / (400 * 400));
         }
 
-        public void UpdateAll()
+        private void UpdateAll()
         {
             pictureBox1.Invalidate();
             if (IsCreatingNew)
