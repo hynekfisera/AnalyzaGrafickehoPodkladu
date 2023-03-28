@@ -281,6 +281,7 @@ namespace analyzaGrafickehoPodkladu
                     }
                     if (SavedAreas.Count >= 0)
                     {
+                        lbSaved.Items.Clear();
                         lbSaved.Items.AddRange(SavedAreas.ToArray());
                         btnExport.Enabled = true;
                     }
