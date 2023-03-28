@@ -188,6 +188,7 @@
             btnImport.TabIndex = 13;
             btnImport.Text = "Import";
             btnImport.UseVisualStyleBackColor = true;
+            btnImport.Click += btnImport_Click;
             // 
             // btnExport
             // 
@@ -198,6 +199,7 @@
             btnExport.TabIndex = 14;
             btnExport.Text = "Export";
             btnExport.UseVisualStyleBackColor = true;
+            btnExport.Click += btnExport_Click;
             // 
             // lbPoints
             // 

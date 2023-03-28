@@ -37,15 +37,27 @@ namespace analyzaGrafickehoPodkladu
 
         private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
         {
+            Point point = GetCornerPoint(e.Location);
             if (IsCreatingNew)
             {
-                SavedAreas[SavedAreas.Count - 1].Points.Add(e.Location);
+                SavedAreas[SavedAreas.Count - 1].Points.Add(point);
                 if (SavedAreas[SavedAreas.Count - 1].Points.Count >= 3)
                 {
                     btnSave.Enabled = true;
                 }
             }
+            else if (cbOverwrite.Checked && lbPoints.SelectedIndex >= 0)
+            {
+                SavedAreas[lbSaved.SelectedIndex].Points[lbPoints.SelectedIndex] = point;
+                lbPoints.Items[lbPoints.SelectedIndex] = point;
+            }
             UpdateAll();
+        }
+
+        private Point GetCornerPoint(Point clickedPoint)
+        {
+            // TODO
+            return clickedPoint;
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -150,6 +162,54 @@ namespace analyzaGrafickehoPodkladu
         private void numScale_ValueChanged(object sender, EventArgs e)
         {
             UpdateAll();
+        }
+
+        private void btnExport_Click(object sender, EventArgs e)
+        {
+            string[] lines = new string[SavedAreas.Count];
+            for (int i = 0; i < lines.Length; i++)
+            {
+                Area area = SavedAreas[i];
+                lines[i] = "";
+                for (int j = 0; j < area.Points.Count; j++)
+                {
+                    Point point = area.Points[j];
+                    lines[i] += $"{point.X},{point.Y}";
+                    if (j != area.Points.Count - 1)
+                    {
+                        lines[i] += ";";
+                    }
+                }
+            }
+            File.WriteAllLines("saved.csv", lines);
+            MessageBox.Show("Úspìšnì vyexportováno do saved.csv");
+        }
+
+        private void btnImport_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog of = new OpenFileDialog())
+            {
+                if (of.ShowDialog() == DialogResult.OK)
+                {
+                    string[] lines = File.ReadAllLines(of.FileName);
+                    foreach (string line in lines)
+                    {
+                        SavedAreas.Add(new Area(SavedAreas.Count));
+                        foreach (string point in line.Split(";"))
+                        {
+                            string[] xAndY = point.Split(",");
+                            int x = int.Parse(xAndY[0]);
+                            int y = int.Parse(xAndY[1]);
+                            SavedAreas[SavedAreas.Count - 1].Points.Add(new Point(x, y));
+                        }
+                    }
+                    if (SavedAreas.Count >= 0)
+                    {
+                        lbSaved.Items.AddRange(SavedAreas.ToArray());
+                        btnExport.Enabled = true;
+                    }
+                }
+            }
         }
     }
 }
