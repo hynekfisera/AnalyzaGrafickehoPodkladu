@@ -37,7 +37,7 @@ namespace analyzaGrafickehoPodkladu
 
         private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
         {
-            Point point = GetCornerPoint(e.Location);
+            Point point = cbImprove.Checked ? GetCornerPoint(e.Location) : e.Location;
             if (IsCreatingNew)
             {
                 SavedAreas[SavedAreas.Count - 1].Points.Add(point);
