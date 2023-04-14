@@ -62,64 +62,168 @@ namespace analyzaGrafickehoPodkladu
             }
             else
             {
-                int initial = Math.Max(pictureBox1.Image.Width, pictureBox1.Image.Height);
-                int up = initial;
-                int down = initial;
-                int left = initial;
-                int right = initial;
+                var initialIntersections = GetClosestIntersections(clickedPoint);
+                Point centerA = GetCenterPoint(clickedPoint, GetIntersectionPoint(clickedPoint, initialIntersections[0]));
+                Point centerB = GetCenterPoint(clickedPoint, GetIntersectionPoint(clickedPoint, initialIntersections[1]));
+                Point center;
+                if (DistanceIsUpDown(initialIntersections[0]))
+                {
+                    center = new Point(centerB.X, centerA.Y);
+                } else
+                {
+                    center = new Point(centerA.X, centerB.Y);
+                }
+                var centerIntersections = GetClosestIntersections(center);
+                if (initialIntersections[0].Item2 == centerIntersections[0].Item2)
+                {
+                    return GetSymmetricalPoint(GetIntersectionPoint(center, centerIntersections[0]), GetIntersectionPoint(clickedPoint, initialIntersections[0]));
+                } else if (initialIntersections[0].Item2 == centerIntersections[1].Item2)
+                {
+                    return GetSymmetricalPoint(GetIntersectionPoint(center, centerIntersections[1]), GetIntersectionPoint(clickedPoint, initialIntersections[0]));
+                }
+                else if (initialIntersections[1].Item2 == centerIntersections[0].Item2)
+                {
+                    return GetSymmetricalPoint(GetIntersectionPoint(center, centerIntersections[0]), GetIntersectionPoint(clickedPoint, initialIntersections[1]));
+                }
+                else if (initialIntersections[1].Item2 == centerIntersections[1].Item2)
+                {
+                    return GetSymmetricalPoint(GetIntersectionPoint(center, centerIntersections[1]), GetIntersectionPoint(clickedPoint, initialIntersections[1]));
+                }
+                else
+                {
+                    MessageBox.Show("Došlo k problému se kterým se silnì nepoèítalo");
+                    return clickedPoint;
+                }
+                //string min = intersections.Min().Item2;
+                //switch (min)
+                //{
+                //    case "up":
+                //        return new Point(clickedPoint.X, clickedPoint.Y - intersections.First(x => x.Item2 == min).Item1);
+                //    case "down":
+                //        return new Point(clickedPoint.X, clickedPoint.Y + intersections.First(x => x.Item2 == min).Item1);
+                //    case "right":
+                //        return new Point(clickedPoint.X + intersections.First(x => x.Item2 == min).Item1, clickedPoint.Y);
+                //    case "left":
+                //        return new Point(clickedPoint.X - intersections.First(x => x.Item2 == min).Item1, clickedPoint.Y);
+                //    default:
+                //        return clickedPoint;
+                //}
+            }
+        }
 
-                for (int i = clickedPoint.Y - 1; i > 0; i--)
+        private Point GetIntersectionPoint(Point clickedPoint, (int, string) intersection)
+        {
+            switch (intersection.Item2)
+            {
+                case "up":
+                    return new Point(clickedPoint.X, clickedPoint.Y - intersection.Item1);
+                case "down":
+                    return new Point(clickedPoint.X, clickedPoint.Y + intersection.Item1);
+                case "right":
+                    return new Point(clickedPoint.X + intersection.Item1, clickedPoint.Y);
+                case "left":
+                    return new Point(clickedPoint.X - intersection.Item1, clickedPoint.Y);
+                default:
+                    return clickedPoint;
+            }
+        }
+
+        private (int, string)[] GetClosestIntersections(Point point)
+        {
+            var intersections = GetIntersections(point).ToList();
+            intersections.Sort((a, b) => a.Item1.CompareTo(b.Item1));
+            bool IsUpDown = DistanceIsUpDown(intersections, 0);
+            var firstIntersection = intersections[0];
+            for (int i = 1; i < 4; i++)
+            {
+                if (IsUpDown ? DistanceIsLeftRight(intersections, i) : DistanceIsUpDown(intersections, i))
                 {
-                    if (!IsBlank(clickedPoint.X, i))
-                    {
-                        up = clickedPoint.Y - i;
-                        break;
-                    }
-                }
-                for (int i = clickedPoint.Y + 1; i < pictureBox1.Image.Height; i++)
-                {
-                    if (!IsBlank(clickedPoint.X, i))
-                    {
-                        down = i - clickedPoint.Y;
-                        break;
-                    }
-                }
-                for (int i = clickedPoint.X + 1; i < pictureBox1.Image.Width; i++)
-                {
-                    if (!IsBlank(i, clickedPoint.Y))
-                    {
-                        right = i - clickedPoint.X;
-                        break;
-                    }
-                }
-                for (int i = clickedPoint.X - 1; i > 0; i--)
-                {
-                    if (!IsBlank(i, clickedPoint.Y))
-                    {
-                        left = clickedPoint.X - i;
-                        break;
-                    }
-                }
-                string max = new[] {
-                    Tuple.Create(up, "up"),
-                    Tuple.Create(down, "down"),
-                    Tuple.Create(left, "left"),
-                    Tuple.Create(right, "right")
-                }.Min().Item2;
-                switch (max)
-                {
-                    case "up":
-                        return new Point(clickedPoint.X, clickedPoint.Y - up);
-                    case "down":
-                        return new Point(clickedPoint.X, clickedPoint.Y + down);
-                    case "right":
-                        return new Point(clickedPoint.X + right, clickedPoint.Y);
-                    case "left":
-                        return new Point(clickedPoint.X - left, clickedPoint.Y);
-                    default:
-                        return clickedPoint;
+                    return new[] { firstIntersection, intersections[i] };
                 }
             }
+            return intersections.ToArray();
+        }
+
+        private bool DistanceIsUpDown(List<(int, string)> intersections, int index)
+        {
+            return new[] { "up", "down" }.FirstOrDefault(x => x == intersections[index].Item2) != null;
+        }
+
+        private bool DistanceIsUpDown((int, string) intersection)
+        {
+            return new[] { "up", "down" }.FirstOrDefault(x => x == intersection.Item2) != null;
+        }
+
+        private bool DistanceIsLeftRight(List<(int, string)> intersections, int index)
+        {
+            return new[] { "left", "right" }.FirstOrDefault(x => x == intersections[index].Item2) != null;
+        }
+
+        private bool DistanceIsLeftRight((int, string) intersection)
+        {
+            return new[] { "left", "right" }.FirstOrDefault(x => x == intersection.Item2) != null;
+        }
+
+        private (int, string)[] GetIntersections(Point point)
+        {
+            int initial = Math.Max(pictureBox1.Image.Width, pictureBox1.Image.Height);
+            int up = initial;
+            int down = initial;
+            int left = initial;
+            int right = initial;
+
+            for (int i = point.Y - 1; i > 0; i--)
+            {
+                if (!IsBlank(point.X, i))
+                {
+                    up = point.Y - i;
+                    break;
+                }
+            }
+            for (int i = point.Y + 1; i < pictureBox1.Image.Height; i++)
+            {
+                if (!IsBlank(point.X, i))
+                {
+                    down = i - point.Y;
+                    break;
+                }
+            }
+            for (int i = point.X + 1; i < pictureBox1.Image.Width; i++)
+            {
+                if (!IsBlank(i, point.Y))
+                {
+                    right = i - point.X;
+                    break;
+                }
+            }
+            for (int i = point.X - 1; i > 0; i--)
+            {
+                if (!IsBlank(i, point.Y))
+                {
+                    left = point.X - i;
+                    break;
+                }
+            }
+            return new[] {
+                    (up, "up"),
+                    (down, "down"),
+                    (left, "left"),
+                    (right, "right")
+            };
+        }
+
+        private Point GetSymmetricalPoint(Point center, Point a)
+        {
+            int x = center.X - a.X;
+            int y = center.Y - a.Y;
+            return new Point(center.X + x, center.Y + y);
+        }
+
+        private Point GetCenterPoint(Point a, Point b)
+        {
+            int x = (a.X + b.X) / 2;
+            int y = (a.Y + b.Y) / 2;
+            return new Point(x, y);
         }
 
         private bool IsBlank(int x, int y)
